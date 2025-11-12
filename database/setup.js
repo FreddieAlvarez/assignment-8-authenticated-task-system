@@ -110,6 +110,12 @@ const Checkout = db.define('Checkout', {
     defaultValue: false }
 });
 
+User.hasMany(Project, { foreignKey: 'userId' });
+Project.belongsTo(User, { foreignKey: 'userId' });
+
+Project.hasMany(Task, { foreignKey: 'projectId' });
+Task.belongsTo(Project, { foreignKey: 'projectId' });
+
 User.hasMany(Checkout, { foreignKey: 'userId' });
 Checkout.belongsTo(User, { foreignKey: 'userId' });
 
