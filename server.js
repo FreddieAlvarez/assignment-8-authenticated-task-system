@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: 'secret',
     resave: false,
     saveUninitialized: false,
     cookie: { 
@@ -231,8 +231,7 @@ app.post('/api/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
     
-        // Check if user with this email already 
-    exists
+        // Check if user with this email already exists
         const existingUser = await User.findOne({ 
     where: { email } });
         if (existingUser) {
