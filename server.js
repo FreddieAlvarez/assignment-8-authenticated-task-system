@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 const { db, Project, Task, User } = require('./database/setup');
 
 const app = express();
