@@ -66,8 +66,58 @@ const Task = db.define('Task', {
     }
 });
 
+// Define User model
+const User = db.define('User', {
+  id: { 
+    type: DataTypes.INTEGER, 
+    primaryKey: true, 
+    autoIncrement: true },
+  name: { 
+    type: DataTypes.STRING, 
+    allowNull: false },
+  email: { 
+    type: DataTypes.STRING, 
+    allowNull: false, 
+    unique: true },
+  membershipDate: { 
+    type: DataTypes.DATE, 
+    defaultValue: DataTypes.NOW },
+  isActive: { 
+    type: DataTypes.BOOLEAN, 
+    defaultValue: true }
+});
+
+// Define Checkout model
+const Checkout = db.define('Checkout', {
+  id: { 
+    type: DataTypes.INTEGER, 
+    primaryKey: true, 
+    autoIncrement: true },
+  userId: { 
+    type: DataTypes.INTEGER, 
+    allowNull: false },
+  bookId: { 
+    type: DataTypes.INTEGER, 
+    allowNull: false },
+  checkoutDate: { 
+    type: DataTypes.DATE, 
+    defaultValue: DataTypes.NOW },
+  dueDate: { 
+    type: DataTypes.DATE, 
+    allowNull: false },
+  returnDate: { 
+    type: DataTypes.DATE, 
+    allowNull: true },
+  isReturned: { 
+    type: DataTypes.BOOLEAN, 
+    defaultValue: false }
+});
+
+User.hasMany(Checkout, { foreignKey: 'userId' });
+Checkout.belongsTo(User, { foreignKey: 'userId' });
+
 // Export for use in other files
-module.exports = { db, Project, Task };
+module.exports = { db, Project, Task, User, Checkout };
 
 // Create database and tables
 async function setupDatabase() {
