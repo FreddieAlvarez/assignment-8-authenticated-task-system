@@ -9,6 +9,16 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000
+    }
+}));
+
 // Test database connection
 async function testConnection() {
     try {
