@@ -72,19 +72,16 @@ const User = db.define('User', {
     type: DataTypes.INTEGER, 
     primaryKey: true, 
     autoIncrement: true },
-  name: { 
+  username: { 
     type: DataTypes.STRING, 
     allowNull: false },
   email: { 
     type: DataTypes.STRING, 
     allowNull: false, 
     unique: true },
-  membershipDate: { 
-    type: DataTypes.DATE, 
-    defaultValue: DataTypes.NOW },
-  isActive: { 
-    type: DataTypes.BOOLEAN, 
-    defaultValue: true }
+  password: { 
+    type: DataTypes.STRING, 
+    allowNull: false }
 });
 
 // Define Checkout model
