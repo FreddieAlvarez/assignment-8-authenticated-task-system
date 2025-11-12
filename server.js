@@ -24,7 +24,7 @@ function requireAuth(req, res, next) {
         // User is authenticated
         req.user = {
             id: req.session.userId,
-            name: req.session.userName,
+            username: req.session.userName,
             email: req.session.userEmail
         };
         next(); 
@@ -80,10 +80,10 @@ app.get('/api/projects/:id', requireAuth, async (req, res) => {
 // POST /api/projects - Create new project
 app.post('/api/projects', requireAuth, async (req, res) => {
     try {
-        const { name, description, status, dueDate } = req.body;
+        const { username, description, status, dueDate } = req.body;
         
         const newProject = await Project.create({
-            name,
+            username,
             description,
             status,
             dueDate
@@ -99,10 +99,10 @@ app.post('/api/projects', requireAuth, async (req, res) => {
 // PUT /api/projects/:id - Update existing project
 app.put('/api/projects/:id', requireAuth, async (req, res) => {
     try {
-        const { name, description, status, dueDate } = req.body;
+        const { username, description, status, dueDate } = req.body;
         
         const [updatedRowsCount] = await Project.update(
-            { name, description, status, dueDate },
+            { username, description, status, dueDate },
             { where: { id: req.params.id } }
         );
         
@@ -229,7 +229,7 @@ app.delete('/api/tasks/:id', requireAuth, async (req, res) => {
 // POST /api/register - Register new library patron
 app.post('/api/register', async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { username, email, password } = req.body;
     
         // Check if user with this email already exists
         const existingUser = await User.findOne({ 
@@ -246,7 +246,7 @@ app.post('/api/register', async (req, res) => {
     
         // Create new user with hashed password
         const newUser = await User.create({
-            name,
+            username,
             email,
             password: hashedPassword  
         });
@@ -256,7 +256,7 @@ app.post('/api/register', async (req, res) => {
             message: 'User registered successfully',
             user: {
                 id: newUser.id,
-                name: newUser.name,
+                username: newUser.username,
                 email: newUser.email
             }
         });
@@ -287,14 +287,14 @@ app.post('/api/login', async (req, res) => {
         
         // Password is correct - create session
         req.session.userId = user.id;
-        req.session.userName = user.name;
+        req.session.userName = user.username;
         req.session.userEmail = user.email;
         
         res.json({
             message: 'Login successful',
             user: {
                 id: user.id,
-                name: user.name,
+                username: user.username,
                 email: user.email
             }
         });
@@ -305,6 +305,20 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// POST /api/logout - User logout
+app.post('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                console.error('Error destroying session:', err);
+                return res.status(500).json({ error: 'Failed to logout' });
+            }
+            res.json({ message: 'Logout successful' });
+        });
+    } else {
+        res.status(400).json({ error: 'No active session' });
+    }
+});
 
 // Start server
 app.listen(PORT, () => {
