@@ -19,6 +19,23 @@ app.use(session({
     }
 }));
 
+function requireAuth(req, res, next) {
+    if (req.session && req.session.userId) {
+        // User is authenticated
+        req.user = {
+            id: req.session.userId,
+            name: req.session.userName,
+            email: req.session.userEmail
+        };
+        next(); 
+    } else {
+        // User is not authenticated
+        res.status(401).json({ 
+            error: 'Authentication required. Please log in.' 
+        });
+    }
+}
+
 // Test database connection
 async function testConnection() {
     try {
@@ -232,7 +249,7 @@ app.post('/api/register', async (req, res) => {
         const newUser = await User.create({
             name,
             email,
-            password: hashedPassword  // Store the hash, not the original password
+            password: hashedPassword  
         });
     
         // Return success (don't send back the password)
