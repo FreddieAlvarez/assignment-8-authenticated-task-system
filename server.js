@@ -252,30 +252,28 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// POST /api/login - User login
+// POST /api/login - User login with session creation
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-    
+        
         // Find user by email
-        const user = await User.findOne({ where: { 
-    email } });
+        const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(401).json({ error:
-        'Invalid email or password' });
+            return res.status(401).json({ error: 'Invalid email or password' });
         }
-    
-         // Compare provided password with hashed 
-    password
-        const isValidPassword = await 
-    bcrypt.compare(password, user.password);
+        
+        // Compare provided password with hashed password
+        const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
-            return res.status(401).json({ error: 
-        'Invalid email or password' });
+            return res.status(401).json({ error: 'Invalid email or password' });
         }
-    
-        // Password is correct - user is 
-    authenticated
+        
+        // Password is correct - create session
+        req.session.userId = user.id;
+        req.session.userName = user.name;
+        req.session.userEmail = user.email;
+        
         res.json({
             message: 'Login successful',
             user: {
@@ -284,10 +282,9 @@ app.post('/api/login', async (req, res) => {
                 email: user.email
             }
         });
-    
+        
     } catch (error) {
-        console.error('Error logging in user:', 
-    error);
+        console.error('Error logging in user:', error);
         res.status(500).json({ error: 'Failed to login' });
     }
 });
